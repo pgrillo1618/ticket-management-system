@@ -1,0 +1,10 @@
+{
+  "name": "ticket-management-system",
+  "private": true,
+  "workspaces": ["apps/*", "packages/*"],
+  "scripts": {
+    "dev:web": "npm run dev --workspace=apps/web",
+    "dev:api": "npm run dev --workspace=apps/api",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  }
+}
