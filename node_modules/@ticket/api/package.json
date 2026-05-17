@@ -6,16 +6,27 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc --noEmit",
     "start": "node dist/index.js",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^7.8.0",
+    "@prisma/client": "^7.8.0",
     "@ticket/types": "*",
+    "better-auth": "^1.6.11",
     "cors": "^2.8.5",
-    "express": "^5.0.0"
+    "dotenv": "^17.4.2",
+    "express": "^5.0.0",
+    "pg": "^8.20.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
+    "@types/pg": "^8.20.0",
+    "prisma": "^7.8.0",
     "tsx": "^4.0.0",
     "typescript": "^5.0.0"
   }

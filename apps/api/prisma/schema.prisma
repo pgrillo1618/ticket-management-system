@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  admin
+  supervisor
+  agent
+}
+
+enum TicketStatus {
+  open
+  resolved
+  closed
+}
+
+enum TicketCategory {
+  question
+  technical_question
+  refund_request
+}
+
+enum TicketPriority {
+  low
+  medium
+  high
+}
+
+enum MessageDirection {
+  inbound
+  outbound
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String
+  emailVerified Boolean   @default(false)
+  image         String?
+  role          UserRole  @default(agent)
+  active        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  tickets       Ticket[]
+  sessions      Session[]
+  accounts      Account[]
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Ticket {
+  id          String          @id @default(cuid())
+  subject     String
+  senderEmail String
+  senderName  String
+  status      TicketStatus    @default(open)
+  category    TicketCategory?
+  priority    TicketPriority?
+  assigneeId  String?
+  assignee    User?           @relation(fields: [assigneeId], references: [id])
+  messages    Message[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model Message {
+  id          String           @id @default(cuid())
+  ticketId    String
+  ticket      Ticket           @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  body        String
+  direction   MessageDirection
+  senderEmail String
+  createdAt   DateTime         @default(now())
+}

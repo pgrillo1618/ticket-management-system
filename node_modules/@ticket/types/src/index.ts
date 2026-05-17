@@ -2,7 +2,7 @@ export type UserRole = 'admin' | 'supervisor' | 'agent'
 
 export type TicketStatus = 'open' | 'resolved' | 'closed'
 
-export type TicketCategory = 'question' | 'technical question' | 'refund request'
+export type TicketCategory = 'question' | 'technical_question' | 'refund_request'
 
 export type TicketPriority = 'low' | 'medium' | 'high'
 
