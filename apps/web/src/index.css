@@ -1,1 +1,35 @@
 @import "tailwindcss";
+
+@theme {
+  --animate-field-invalid: field-invalid 0.618s ease-out;
+  /* 0.809s = φ/2 per half-cycle → full breathing cycle = φ = 1.618s */
+  --animate-border-glow: border-glow-pulse 0.809s ease-in-out infinite alternate;
+  /* entrance + persistent glow: cloud-in once, then cloud-glow-pulse after 0.382s */
+  --animate-cloud-in: cloud-in 0.382s ease-out;
+  --animate-cloud-glow: cloud-glow-pulse 0.809s ease-in-out infinite alternate;
+}
+
+@keyframes cloud-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes border-glow-pulse {
+  from { box-shadow: 0 0 4px 1px rgba(248, 113, 113, 0.15); }
+  to   { box-shadow: 0 0 16px 5px rgba(248, 113, 113, 0.38); }
+}
+
+@keyframes cloud-glow-pulse {
+  from { box-shadow: 0 0 4px 1px rgba(252, 165, 165, 0.2); }
+  to   { box-shadow: 0 0 12px 4px rgba(252, 165, 165, 0.45); }
+}
+
+@keyframes field-invalid {
+  0%    { transform: translateX(0); }
+  15%   { transform: translateX(-8px); }
+  30%   { transform: translateX(4.944px); }  /* 8 ÷ φ */
+  45%   { transform: translateX(-3.056px); } /* 4.944 ÷ φ */
+  61.8% { transform: translateX(1.888px); }  /* golden ratio point */
+  76.4% { transform: translateX(-1.167px); } /* 1.888 ÷ φ */
+  100%  { transform: translateX(0); }
+}
