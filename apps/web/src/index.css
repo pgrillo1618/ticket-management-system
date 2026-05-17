@@ -2,11 +2,11 @@
 
 @theme {
   --animate-field-invalid: field-invalid 0.618s ease-out;
-  /* 0.809s = φ/2 per half-cycle → full breathing cycle = φ = 1.618s */
-  --animate-border-glow: border-glow-pulse 0.809s ease-in-out infinite alternate;
-  /* entrance + persistent glow: cloud-in once, then cloud-glow-pulse after 0.382s */
+  /* all three glow/breathe animations share φ = 1.618s so they peak and dim together */
+  --animate-border-glow: border-glow-pulse 1.618s ease-in-out infinite alternate;
   --animate-cloud-in: cloud-in 0.382s ease-out;
-  --animate-cloud-glow: cloud-glow-pulse 0.809s ease-in-out infinite alternate;
+  --animate-cloud-breathe: cloud-breathe 1.618s ease-in-out infinite alternate;
+  --animate-cloud-glow: cloud-glow-pulse 1.618s ease-in-out infinite alternate;
 }
 
 @keyframes cloud-in {
@@ -17,6 +17,11 @@
 @keyframes border-glow-pulse {
   from { box-shadow: 0 0 4px 1px rgba(248, 113, 113, 0.15); }
   to   { box-shadow: 0 0 16px 5px rgba(248, 113, 113, 0.38); }
+}
+
+@keyframes cloud-breathe {
+  from { transform: scale(1); }
+  to   { transform: scale(1.0618); } /* 6.18% = φ⁻² × 10 */
 }
 
 @keyframes cloud-glow-pulse {

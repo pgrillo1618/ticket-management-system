@@ -50,20 +50,22 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-      <div className="flex flex-col items-center w-full max-w-sm px-4">
+    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center gap-[1.618rem] px-4">
 
-        {serverError && (
-          <div className="relative z-10 w-full animate-cloud-in">
-            <div className="bg-red-50 border border-red-300 rounded-2xl px-4 py-3 animate-cloud-glow [animation-delay:0.382s] [animation-fill-mode:backwards]">
+      {serverError && (
+        <div className="relative w-full max-w-sm animate-cloud-in">
+          <div className="animate-cloud-breathe [animation-delay:0.382s] [animation-fill-mode:backwards]">
+            <div className="relative bg-red-50 border border-red-300 rounded-2xl px-4 py-3 animate-cloud-glow [animation-delay:0.382s] [animation-fill-mode:backwards]">
               <p className="text-sm text-red-700 font-medium text-center">{serverError}</p>
+              {/* Speech bubble tail pointing down toward the form */}
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-3 h-3 bg-red-50 border-r border-b border-red-300 rotate-45" />
             </div>
-            {/* Speech bubble tail pointing down toward the form */}
-            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-3 h-3 bg-red-50 border-r border-b border-red-300 rotate-45" />
           </div>
-        )}
+        </div>
+      )}
 
-        <div className={`bg-white rounded-2xl shadow-sm border p-8 w-full transition-colors duration-[382ms] ${serverError ? 'border-red-400 animate-border-glow' : 'border-gray-200'}`}>
+      <div className="w-full max-w-sm">
+        <div className={`bg-white rounded-2xl shadow-sm border p-8 w-full transition-colors duration-[382ms] ${serverError ? 'border-red-400 animate-border-glow [animation-delay:0.382s] [animation-fill-mode:backwards]' : 'border-gray-200'}`}>
           <h1 className="text-xl font-semibold text-gray-800 mb-6">Sign in</h1>
 
           <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-4">
@@ -76,11 +78,10 @@ export default function LoginPage() {
                 type="email"
                 autoComplete="email"
                 {...register('email')}
-                className={`border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 transition-[border-color,box-shadow] duration-[382ms] ${
-                  errors.email
-                    ? 'border-red-500 focus:ring-red-500 animate-field-invalid'
-                    : 'border-gray-300 focus:ring-blue-500'
-                }`}
+                className={`border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 transition-[border-color,box-shadow] duration-[382ms] ${errors.email
+                  ? 'border-red-500 focus:ring-red-500 animate-field-invalid'
+                  : 'border-gray-300 focus:ring-blue-500'
+                  }`}
               />
               {errors.email && (
                 <p className="text-xs text-red-600">{errors.email.message}</p>
@@ -96,11 +97,10 @@ export default function LoginPage() {
                 type="password"
                 autoComplete="current-password"
                 {...register('password')}
-                className={`border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 transition-[border-color,box-shadow] duration-[382ms] ${
-                  errors.password
-                    ? 'border-red-500 focus:ring-red-500 animate-field-invalid'
-                    : 'border-gray-300 focus:ring-blue-500'
-                }`}
+                className={`border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 transition-[border-color,box-shadow] duration-[382ms] ${errors.password
+                  ? 'border-red-500 focus:ring-red-500 animate-field-invalid'
+                  : 'border-gray-300 focus:ring-blue-500'
+                  }`}
               />
               {errors.password && (
                 <p className="text-xs text-red-600">{errors.password.message}</p>
@@ -116,8 +116,8 @@ export default function LoginPage() {
             </button>
           </form>
         </div>
-
       </div>
+
     </div>
   )
 }
