@@ -1,7 +1,9 @@
 import { createBrowserRouter } from 'react-router'
 import App from './App'
 import AppLayout from './layouts/AppLayout'
+import RequireAdmin from './layouts/RequireAdmin'
 import LoginPage from './pages/LoginPage'
+import UsersPage from './pages/UsersPage'
 
 export const router = createBrowserRouter([
   {
@@ -10,6 +12,12 @@ export const router = createBrowserRouter([
       {
         path: '/',
         element: <App />,
+      },
+      {
+        element: <RequireAdmin />,
+        children: [
+          { path: '/users', element: <UsersPage /> },
+        ],
       },
     ],
   },

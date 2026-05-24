@@ -4,6 +4,9 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { authClient } from '../lib/auth-client'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 const schema = z.object({
   email: z.string().email('Invalid email address'),
@@ -50,74 +53,91 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center gap-[1.618rem] px-4">
+    <div className="min-h-screen bg-[#1f1f1f] flex flex-col items-center justify-center px-4">
+      <div className="w-full max-w-sm flex flex-col gap-6">
 
-      {serverError && (
-        <div className="relative w-full max-w-sm animate-cloud-in">
-          <div className="animate-cloud-breathe [animation-delay:0.382s] [animation-fill-mode:backwards]">
-            <div className="relative bg-red-50 border border-red-300 rounded-2xl px-4 py-3 animate-cloud-glow [animation-delay:0.382s] [animation-fill-mode:backwards]">
-              <p className="text-sm text-red-700 font-medium text-center">{serverError}</p>
-              {/* Speech bubble tail pointing down toward the form */}
-              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-3 h-3 bg-red-50 border-r border-b border-red-300 rotate-45" />
-            </div>
+        {/* Brand */}
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-9 h-9 rounded-xl bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M7 8h10M7 12h6M7 16h8" />
+            </svg>
+          </div>
+          <div className="text-center">
+            <h1 className="text-white text-[2.023rem] font-semibold tracking-tight">Log into your account</h1>
+            <p className="text-zinc-500 text-sm mt-0.5">Ticket Management System</p>
           </div>
         </div>
-      )}
 
-      <div className="w-full max-w-sm">
-        <div className={`bg-white rounded-2xl shadow-sm border p-8 w-full transition-colors duration-[382ms] ${serverError ? 'border-red-400 animate-border-glow [animation-delay:0.382s] [animation-fill-mode:backwards]' : 'border-gray-200'}`}>
-          <h1 className="text-xl font-semibold text-gray-800 mb-6">Sign in</h1>
+        {/* Error */}
+        {serverError && (
+          <div className="animate-cloud-in bg-red-950/60 border border-red-800/50 rounded-md px-4 py-3">
+            <p className="text-sm text-red-400 text-center font-medium">{serverError}</p>
+          </div>
+        )}
 
+        {/* Card */}
+        <div className={`bg-zinc-900 border rounded-md p-6 flex flex-col gap-4 transition-colors duration-[382ms] ${
+          serverError
+            ? 'border-red-800/60 animate-border-glow'
+            : 'border-zinc-800'
+        }`}>
           <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-4">
-            <div className="flex flex-col gap-1">
-              <label htmlFor="email" className="text-sm font-medium text-gray-700">
+
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="email" className="text-sm font-medium text-zinc-300">
                 Email
-              </label>
-              <input
+              </Label>
+              <Input
                 id="email"
                 type="email"
                 autoComplete="email"
+                placeholder="Enter work email"
                 {...register('email')}
-                className={`border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 transition-[border-color,box-shadow] duration-[382ms] ${errors.email
-                  ? 'border-red-500 focus:ring-red-500 animate-field-invalid'
-                  : 'border-gray-300 focus:ring-blue-500'
-                  }`}
+                className={`bg-zinc-800/60 border rounded-sm px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus-visible:ring-1 focus-visible:ring-offset-0 transition-[border-color,box-shadow] duration-[382ms] ${
+                  errors.email
+                    ? 'border-red-700/70 focus-visible:ring-red-700/50 animate-field-invalid'
+                    : 'border-zinc-700 focus-visible:border-zinc-500 focus-visible:ring-zinc-500/50'
+                }`}
               />
               {errors.email && (
-                <p className="text-xs text-red-600">{errors.email.message}</p>
+                <p className="text-xs text-red-400">{errors.email.message}</p>
               )}
             </div>
 
-            <div className="flex flex-col gap-1">
-              <label htmlFor="password" className="text-sm font-medium text-gray-700">
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="password" className="text-sm font-medium text-zinc-300">
                 Password
-              </label>
-              <input
+              </Label>
+              <Input
                 id="password"
                 type="password"
                 autoComplete="current-password"
+                placeholder="Enter password"
                 {...register('password')}
-                className={`border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 transition-[border-color,box-shadow] duration-[382ms] ${errors.password
-                  ? 'border-red-500 focus:ring-red-500 animate-field-invalid'
-                  : 'border-gray-300 focus:ring-blue-500'
-                  }`}
+                className={`bg-zinc-800/60 border rounded-sm px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus-visible:ring-1 focus-visible:ring-offset-0 transition-[border-color,box-shadow] duration-[382ms] ${
+                  errors.password
+                    ? 'border-red-700/70 focus-visible:ring-red-700/50 animate-field-invalid'
+                    : 'border-zinc-700 focus-visible:border-zinc-500 focus-visible:ring-zinc-500/50'
+                }`}
               />
               {errors.password && (
-                <p className="text-xs text-red-600">{errors.password.message}</p>
+                <p className="text-xs text-red-400">{errors.password.message}</p>
               )}
             </div>
 
-            <button
+            <Button
               type="submit"
               disabled={isSubmitting}
-              className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white text-sm font-medium rounded-lg px-4 py-2 transition-colors"
+              className="mt-1 w-full bg-[#2be9a1] hover:bg-[#22d492] disabled:opacity-40 text-zinc-900 text-sm font-medium rounded-sm px-4 py-2.5 cursor-pointer"
             >
-              {isSubmitting ? 'Signing in…' : 'Sign in'}
-            </button>
+              {isSubmitting ? 'Signing in…' : 'Login'}
+            </Button>
+
           </form>
         </div>
-      </div>
 
+      </div>
     </div>
   )
 }

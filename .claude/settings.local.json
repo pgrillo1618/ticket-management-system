@@ -8,7 +8,9 @@
       "Bash(npm install *)",
       "Bash(openssl rand *)",
       "Bash(npx prisma *)",
-      "Bash(PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION=\"yes\" npx prisma migrate reset --force)"
+      "Bash(PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION=\"yes\" npx prisma migrate reset --force)",
+      "Bash(npx shadcn@latest init -y)",
+      "Bash(npx shadcn@latest *)"
     ]
   }
 }
