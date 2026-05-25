@@ -10,7 +10,11 @@
       "Bash(npx prisma *)",
       "Bash(PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION=\"yes\" npx prisma migrate reset --force)",
       "Bash(npx shadcn@latest init -y)",
-      "Bash(npx shadcn@latest *)"
+      "Bash(npx shadcn@latest *)",
+      "Bash(npm audit *)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(k,v['severity']\\) for k,v in d['vulnerabilities'].items\\(\\)]\")",
+      "Bash(python3 -c ' *)",
+      "Bash(npm list *)"
     ]
   }
 }

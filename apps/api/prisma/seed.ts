@@ -8,9 +8,15 @@ const seedAuth = betterAuth({
   emailAndPassword: { enabled: true },
 })
 
+const adminPassword = process.env.SEED_ADMIN_PASSWORD
+const agentPassword = process.env.SEED_AGENT_PASSWORD
+if (!adminPassword || !agentPassword) {
+  throw new Error('SEED_ADMIN_PASSWORD and SEED_AGENT_PASSWORD environment variables must be set before seeding')
+}
+
 const users: { email: string; name: string; password: string; role: 'admin' | 'agent' }[] = [
-  { email: 'admin@example.com', name: 'Admin User', password: 'changeme123', role: 'admin' },
-  { email: 'agent@example.com', name: 'Agent User', password: 'changeme123', role: 'agent' },
+  { email: 'admin@example.com', name: 'Admin User', password: adminPassword, role: 'admin' },
+  { email: 'agent@example.com', name: 'Agent User', password: agentPassword, role: 'agent' },
 ]
 
 async function main() {
