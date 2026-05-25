@@ -14,6 +14,9 @@
   --animate-cloud-in: cloud-in 0.382s ease-out;
   --animate-cloud-breathe: cloud-breathe 1.618s ease-in-out infinite alternate;
   --animate-cloud-glow: cloud-glow-pulse 1.618s ease-in-out infinite alternate;
+  /* golden ratio logo animations — 3.236s = 2φ draw cycle, 1.618s = φ glow pulse */
+  --animate-golden-spiral: golden-spiral-draw 3.236s ease-in-out infinite;
+  --animate-golden-rect-glow: golden-rect-glow 1.618s ease-in-out infinite alternate;
 }
 
 @keyframes cloud-in {
@@ -34,6 +37,17 @@
 @keyframes cloud-glow-pulse {
   from { box-shadow: 0 0 4px 1px rgba(252, 165, 165, 0.2); }
   to   { box-shadow: 0 0 12px 4px rgba(252, 165, 165, 0.45); }
+}
+
+@keyframes golden-spiral-draw {
+  0%   { stroke-dashoffset: 400; }
+  50%  { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: 400; }
+}
+
+@keyframes golden-rect-glow {
+  from { box-shadow: 0 0 6px 1px rgba(43, 233, 161, 0.10); }
+  to   { box-shadow: 0 0 20px 5px rgba(43, 233, 161, 0.30); }
 }
 
 @keyframes field-invalid {

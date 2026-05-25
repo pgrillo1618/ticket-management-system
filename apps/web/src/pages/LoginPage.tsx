@@ -58,9 +58,28 @@ export default function LoginPage() {
 
         {/* Brand */}
         <div className="flex flex-col items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-emerald-500 flex items-center justify-center shadow-lg shadow-emerald-500/20">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M7 8h10M7 12h6M7 16h8" />
+          <div
+            className="rounded-md border border-emerald-500/30 bg-emerald-950/20 overflow-hidden animate-golden-rect-glow"
+            style={{ width: '81px', height: '50px' }}
+          >
+            <svg viewBox="-2 -2 165.8 104" className="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
+              {/* golden ratio subdivision lines */}
+              <line x1="100" y1="0" x2="100" y2="100" stroke="#2be9a1" strokeWidth="0.8" strokeOpacity="0.2" />
+              <line x1="100" y1="61.8" x2="161.8" y2="61.8" stroke="#2be9a1" strokeWidth="0.8" strokeOpacity="0.2" />
+              <line x1="123.6" y1="61.8" x2="123.6" y2="100" stroke="#2be9a1" strokeWidth="0.8" strokeOpacity="0.2" />
+              <line x1="100" y1="76.4" x2="123.6" y2="76.4" stroke="#2be9a1" strokeWidth="0.8" strokeOpacity="0.2" />
+              <line x1="114.6" y1="61.8" x2="114.6" y2="76.4" stroke="#2be9a1" strokeWidth="0.8" strokeOpacity="0.2" />
+              <line x1="114.6" y1="70.8" x2="123.6" y2="70.8" stroke="#2be9a1" strokeWidth="0.8" strokeOpacity="0.2" />
+              {/* golden spiral — 7 quarter-circle arcs, all CCW (sweep=0), drawn with dashoffset animation */}
+              <path
+                d="M 100 100 A 100 100 0 0 0 0 0 A 61.8 61.8 0 0 0 161.8 61.8 A 38.2 38.2 0 0 0 123.6 100 A 23.6 23.6 0 0 0 100 76.4 A 14.6 14.6 0 0 0 114.6 61.8 A 9 9 0 0 0 123.6 70.8 A 5.6 5.6 0 0 0 118 76.4"
+                stroke="#2be9a1"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeDasharray="400"
+                strokeDashoffset="400"
+                className="animate-golden-spiral"
+              />
             </svg>
           </div>
           <div className="text-center">
