@@ -50,6 +50,27 @@ packages/types  Shared TypeScript types consumed by both apps
 - Referenced as `@ticket/types` in both workspaces
 - Add new shared types here; avoid duplicating type definitions across apps
 
+## End-to-end testing
+
+Tests live in `apps/e2e/tests/`. Run them with:
+
+```bash
+npm run test:e2e          # headless, all browsers
+npm run test:ui --workspace=apps/e2e   # interactive UI mode
+```
+
+**Always use the `playwright-e2e-tester` agent to write e2e tests.** Never write Playwright test files manually — delegate every new test file or modification to that agent.
+
+### E2E setup summary
+
+- **Test DB**: `ticket_management_e2e` (separate from dev DB) — reset and re-seeded automatically before every run via `global-setup.ts`
+- **Test API**: port 3001 (`BETTER_AUTH_URL=http://localhost:3001`, `ALLOWED_ORIGIN=http://localhost:5174`)
+- **Test Web**: port 5174 — Vite proxies `/api/*` to `http://localhost:3001`
+- **Seeded users**: `admin@example.com` and `agent@example.com` with passwords from `apps/e2e/.env.test`
+- Config: `apps/e2e/playwright.config.ts` — `globalSetup`, three browser projects (Chromium, Firefox, WebKit)
+
+Test ports (3001, 5174) never conflict with dev servers (3000, 5173), so both can run simultaneously.
+
 ## Key conventions
 
 - API responses follow `ApiResponse<T>` / `ApiError` shapes from `@ticket/types`
