@@ -32,10 +32,20 @@ export default async function globalSetup() {
     SEED_AGENT_PASSWORD: process.env.E2E_AGENT_PASSWORD!,
   }
 
-  // Reset schema (drops all tables, re-runs every migration) then seed
-  console.log('[e2e] Resetting test database schema...')
-  execSync('npx prisma migrate reset --force --skip-seed', { cwd: apiDir, env, stdio: 'inherit' })
+  // Apply any pending migrations (non-destructive — safe for CI and local)
+  console.log('[e2e] Applying migrations to test database...')
+  execSync('npx prisma migrate deploy', { cwd: apiDir, env, stdio: 'inherit' })
 
+  // Wipe all application tables so every test run starts from a clean slate
+  console.log('[e2e] Truncating test data...')
+  const db = new Client({ connectionString: dbUrl })
+  await db.connect()
+  await db.query(
+    `TRUNCATE TABLE "Message", "Ticket", "Session", "Account", "Verification", "User" RESTART IDENTITY CASCADE`
+  )
+  await db.end()
+
+  // Populate with known test users (admin + agent)
   console.log('[e2e] Seeding test database...')
   execSync('npx tsx prisma/seed.ts', { cwd: apiDir, env, stdio: 'inherit' })
 

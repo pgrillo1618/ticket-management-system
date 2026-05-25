@@ -73,6 +73,8 @@ export default defineConfig({
       env: {
         // Tells vite.config.ts which API host to proxy /api/* to
         API_URL,
+        // Override the .env value so the auth client targets the e2e web server
+        VITE_AUTH_BASE_URL: WEB_URL,
       },
     },
   ],
