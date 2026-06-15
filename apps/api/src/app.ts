@@ -1,6 +1,7 @@
 import express, { Request, Response, NextFunction } from 'express'
 import cors from 'cors'
 import helmet from 'helmet'
+import { Prisma } from '@prisma/client'
 import { toNodeHandler } from 'better-auth/node'
 import { auth } from './lib/auth'
 import { router } from './routes'
@@ -19,6 +20,10 @@ app.get('/api/health', (_req, res) => res.json({ status: 'ok' }))
 app.use('/api', requireAuth, router)
 
 app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
+  if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2025') {
+    res.status(404).json({ error: 'NotFound', message: 'Resource not found' })
+    return
+  }
   console.error(err)
   const isDev = process.env.NODE_ENV !== 'production'
   res.status(500).json({ error: 'InternalServerError', message: isDev ? err.message : 'An unexpected error occurred' })

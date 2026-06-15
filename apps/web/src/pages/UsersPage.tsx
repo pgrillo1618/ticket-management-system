@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import type { User, UserRole, ApiResponse } from '@ticket/types'
 import { authClient } from '../lib/auth-client'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
@@ -14,38 +14,46 @@ const roleBadgeClass: Record<UserRole, string> = {
   agent: 'bg-gray-100 text-gray-600 border-gray-200',
 }
 
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-}
+const DATE_FORMATTER = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+const formatDate = (iso: string) => DATE_FORMATTER.format(new Date(iso))
 
 export default function UsersPage() {
   const { data: session } = authClient.useSession()
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [updatingId, setUpdatingId] = useState<string | null>(null)
+  const [updatingIds, setUpdatingIds] = useState<Set<string>>(new Set())
+  const [updateErrors, setUpdateErrors] = useState<Record<string, string>>({})
 
-  useEffect(() => {
-    fetchUsers()
-  }, [])
-
-  async function fetchUsers() {
+  const fetchUsers = useCallback(async (signal?: AbortSignal) => {
     try {
       setLoading(true)
       setError(null)
-      const res = await fetch('/api/users', { credentials: 'include' })
+      const res = await fetch('/api/users', { credentials: 'include', signal })
       if (!res.ok) throw new Error('Failed to fetch users')
       const json: ApiResponse<User[]> = await res.json()
       setUsers(json.data)
-    } catch {
+    } catch (err) {
+      if (err instanceof Error && err.name === 'AbortError') return
       setError('Failed to load users. Please try again.')
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    const controller = new AbortController()
+    fetchUsers(controller.signal)
+    return () => controller.abort()
+  }, [fetchUsers])
 
   async function updateUser(id: string, data: Partial<Pick<User, 'role' | 'active'>>) {
-    setUpdatingId(id)
+    const original = users.find(u => u.id === id)
+    if (!original) return
+
+    setUpdatingIds(prev => new Set(prev).add(id))
+    setUsers(prev => prev.map(u => u.id === id ? { ...u, ...data } : u))
+
     try {
       const res = await fetch(`/api/users/${id}`, {
         method: 'PATCH',
@@ -54,15 +62,17 @@ export default function UsersPage() {
         body: JSON.stringify(data),
       })
       if (!res.ok) {
-        const err = await res.json()
-        throw new Error(err.message ?? 'Failed to update user')
+        const errBody = await res.json()
+        throw new Error(errBody.message ?? 'Failed to update user')
       }
       const json: ApiResponse<User> = await res.json()
       setUsers(prev => prev.map(u => u.id === id ? json.data : u))
+      setUpdateErrors(prev => { const next = { ...prev }; delete next[id]; return next })
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Failed to update user')
+      setUsers(prev => prev.map(u => u.id === id ? original : u))
+      setUpdateErrors(prev => ({ ...prev, [id]: err instanceof Error ? err.message : 'Failed to update user' }))
     } finally {
-      setUpdatingId(null)
+      setUpdatingIds(prev => { const next = new Set(prev); next.delete(id); return next })
     }
   }
 
@@ -111,7 +121,7 @@ export default function UsersPage() {
                     <p className="text-sm text-red-500">{error}</p>
                     <Button
                       variant="link"
-                      onClick={fetchUsers}
+                      onClick={() => fetchUsers()}
                       className="text-xs text-blue-600 hover:text-blue-700 h-auto p-0 mt-2"
                     >
                       Try again
@@ -130,7 +140,7 @@ export default function UsersPage() {
 
               {!loading && !error && users.map(user => {
                 const isSelf = user.id === currentUserId
-                const isUpdating = updatingId === user.id
+                const isUpdating = updatingIds.has(user.id)
 
                 return (
                   <TableRow key={user.id} className="border-gray-100 hover:bg-gray-50/50">
@@ -182,6 +192,9 @@ export default function UsersPage() {
                       >
                         {isUpdating ? '…' : user.active ? 'Deactivate' : 'Activate'}
                       </Button>
+                      {updateErrors[user.id] && (
+                        <p className="text-xs text-red-500 mt-1">{updateErrors[user.id]}</p>
+                      )}
                     </TableCell>
                   </TableRow>
                 )
