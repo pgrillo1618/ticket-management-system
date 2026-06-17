@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -15,10 +15,56 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
+const PHI = 1.618033988749895
+// All 7 Fibonacci arcs — produces the tight nautilus coil at the center
+const SPIRAL_PATH = 'M 100 100 A 100 100 0 0 0 0 0 A 61.8 61.8 0 0 0 161.8 61.8 A 38.2 38.2 0 0 0 123.6 100 A 23.6 23.6 0 0 0 100 76.4 A 14.6 14.6 0 0 0 114.6 61.8 A 9 9 0 0 0 123.6 70.8 A 5.6 5.6 0 0 0 118 76.4'
+// Straight chamber-wall lines — the sides of each Fibonacci square that create the nautilus compartments
+const CHAMBER_WALLS: [number, number, number, number][] = [
+  [100,   0,    100,   100  ],
+  [100,   61.8, 161.8, 61.8 ],
+  [123.6, 61.8, 123.6, 100  ],
+  [100,   76.4, 123.6, 76.4 ],
+  [114.6, 61.8, 114.6, 76.4 ],
+  [114.6, 70.8, 123.6, 70.8 ],
+]
+const SPIRAL_COLORS = ['#D4AF37', '#E8C547', '#C9A227', '#FFD700', '#B8A038']
+
+interface Sparkle {
+  id: number
+  x: number
+  y: number
+  tx: number
+  ty: number
+  rot: number
+  size: number
+  color: string
+  duration: number
+}
+
+function spawnSparkles(clientX: number, clientY: number, startId: number): Sparkle[] {
+  return Array.from({ length: 8 }, (_, i) => {
+    const angle = (i / 8) * Math.PI * 2 + (Math.random() * 0.618 - 0.309)
+    const distance = 55 + Math.random() * 75
+    return {
+      id: startId + i,
+      x: clientX,
+      y: clientY,
+      tx: Math.cos(angle) * distance,
+      ty: Math.sin(angle) * distance,
+      rot: (Math.random() - 0.5) * 180, // limited rotation so shape stays readable
+      size: 30 + Math.random() * 18,    // 30–48px — large enough to see chamber walls
+      color: SPIRAL_COLORS[(startId + i) % SPIRAL_COLORS.length],
+      duration: 1.0 + Math.random() * 0.618,
+    }
+  })
+}
+
 export default function LoginPage() {
   const navigate = useNavigate()
   const { data: session, isPending } = authClient.useSession()
   const [serverError, setServerError] = useState<string | null>(null)
+  const [sparkles, setSparkles] = useState<Sparkle[]>([])
+  const nextId = useRef(0)
 
   const {
     register,
@@ -27,6 +73,16 @@ export default function LoginPage() {
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   })
+
+  const handlePageClick = useCallback((e: React.MouseEvent) => {
+    const id = nextId.current
+    nextId.current += 8
+    setSparkles(prev => [...prev, ...spawnSparkles(e.clientX, e.clientY, id)].slice(-64))
+  }, [])
+
+  const removeSparkle = useCallback((id: number) => {
+    setSparkles(prev => prev.filter(s => s.id !== id))
+  }, [])
 
   if (!isPending && session) {
     navigate('/', { replace: true })
@@ -53,7 +109,47 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#1f1f1f] flex flex-col items-center justify-center px-4">
+    <div className="min-h-screen bg-[#1f1f1f] flex flex-col items-center justify-center px-4" onClick={handlePageClick}>
+      {sparkles.map(sparkle => (
+        <div
+          key={sparkle.id}
+          onAnimationEnd={() => removeSparkle(sparkle.id)}
+          style={{
+            position: 'fixed',
+            left: sparkle.x,
+            top: sparkle.y,
+            '--sparkle-tx': `${sparkle.tx}px`,
+            '--sparkle-ty': `${sparkle.ty}px`,
+            '--sparkle-rot': `${sparkle.rot}deg`,
+            animation: `sparkle-fly ${sparkle.duration}s ease-out forwards`,
+            pointerEvents: 'none',
+            zIndex: 9999,
+          } as React.CSSProperties}
+        >
+          <svg
+            viewBox="-2 -2 165.8 104"
+            width={Math.round(sparkle.size * 165.8 / 104)}
+            height={Math.round(sparkle.size)}
+            fill="none"
+          >
+            {CHAMBER_WALLS.map(([x1, y1, x2, y2], i) => (
+              <line
+                key={i}
+                x1={x1} y1={y1} x2={x2} y2={y2}
+                stroke={sparkle.color}
+                strokeWidth="3"
+              />
+            ))}
+            <path
+              d={SPIRAL_PATH}
+              stroke={sparkle.color}
+              strokeWidth="4.5"
+              strokeLinecap="round"
+              fill="none"
+            />
+          </svg>
+        </div>
+      ))}
       <div className="w-full max-w-sm flex flex-col gap-6">
 
         {/* Brand */}

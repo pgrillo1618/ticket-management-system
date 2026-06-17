@@ -50,6 +50,21 @@
   to   { box-shadow: 0 0 20px 5px rgba(43, 233, 161, 0.30); }
 }
 
+@keyframes sparkle-fly {
+  0% {
+    transform: translate(-50%, -50%) scale(1.2) rotate(0deg);
+    opacity: 1;
+  }
+  61.8% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translate(calc(-50% + var(--sparkle-tx)), calc(-50% + var(--sparkle-ty))) scale(0.25) rotate(var(--sparkle-rot));
+    opacity: 0;
+  }
+}
+
+
 @keyframes field-invalid {
   0%    { transform: translateX(0); }
   15%   { transform: translateX(-8px); }
